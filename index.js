@@ -4,7 +4,20 @@ const axios = require("axios");
 const fetch = require("node-fetch");
 const { gql } = require("apollo-server-express");
 const { users } = require("./fakeData");
+const mongoose = require("mongoose");
+const StockData = require("./db/Model");
+require("dotenv").config();
 
+const MONGO_HOST = process.env.MONGO_HOST;
+const MONGO_PORT = process.env.MONGO_PORT;
+
+mongoose.connect(
+  "mongodb://" + MONGO_HOST + ":" + MONGO_PORT + "/graphQLData",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+);
 const app = express();
 
 const typeDefs = gql`
@@ -71,10 +84,45 @@ const resolvers = {
       return users;
     },
     async getAllStockData() {
-      //   const res = await axios.get(`https://jsonplaceholder.typicode.com/posts`);
+      const data = ["BTC", "ETH"];
       const res = await axios.get(
-        `https://api.nomics.com/v1/currencies/ticker?key=7e69217413100117711004501a2a5e57&currency=BTC,ETH&ids=BTC,ETH,XRP&page=1&per-page=10`
+        `https://api.nomics.com/v1/currencies/ticker?key=7e69217413100117711004501a2a5e57&currency=BTC,ETH&ids=${data}`
       );
+      //  console.log(res.data);
+      res.data.filter((i) => {
+        //console.log(i);
+        if (i.id === "BTC") {
+          const stockData = new StockData({
+            _id: new mongoose.Types.ObjectId(),
+            symbol: i.symbol,
+            name: i.name,
+            logo_url: i.logo_url,
+            status: i.status,
+            price: i.price,
+            price_date: i.price_date,
+            price_timestamp: i.price_timestamp,
+            circulating_supply: i.circulating_supply,
+            market_cap: i.market_cap,
+            market_cap_dominance: i.market_cap_dominance,
+            num_exchanges: i.num_exchanges,
+            num_pairs: i.num_pairs,
+            num_pairs_unmapped: i.num_pairs_unmapped,
+            first_candle: i.first_candle,
+            first_trade: i.first_trade,
+            first_order_book: i.first_order_book,
+            rank: i.rank,
+            rank_delta: i.rank_delta,
+            high: i.high,
+            high_timestamp: i.high_timestamp,
+          });
+          // console.log("stockData", stockData);
+          stockData.save(function (err, doc) {
+            if (err) return console.error(err);
+            console.log("Stock Data Added uccussfully!");
+          });
+        }
+      });
+
       return res.data;
     },
   },
