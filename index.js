@@ -114,11 +114,19 @@ const resolvers = {
             rank_delta: i.rank_delta,
             high: i.high,
             high_timestamp: i.high_timestamp,
+            ytd: {
+              volume: i.ytd.volume,
+              price_change: i.ytd.price_change,
+              price_change_pct: i.ytd.price_change_pct,
+              volume_change: i.ytd.volume_change,
+              volume_change_pct: i.ytd.volume_change_pct,
+              market_cap_change: i.ytd.market_cap_change,
+              market_cap_change_pct: i.ytd.market_cap_change_pct,
+            },
           });
-          // console.log("stockData", stockData);
           stockData.save(function (err, doc) {
             if (err) return console.error(err);
-            console.log("Stock Data Added uccussfully!");
+            console.log("Stock Data Added succussfully!");
           });
         }
       });

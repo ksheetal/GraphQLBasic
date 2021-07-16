@@ -27,7 +27,15 @@ const stockSchema = mongoose.Schema({
   rank_delta: { type: String, required: false },
   high: { type: String, required: false },
   high_timestamp: { type: String, required: false },
-  ytd: { type: String, required: false },
+  ytd: {
+    volume: { type: String, require: false },
+    price_change: { type: String, require: false },
+    price_change_pct: { type: String, require: false },
+    volume_change: { type: String, require: false },
+    volume_change_pct: { type: String, require: false },
+    market_cap_change: { type: String, require: false },
+    market_cap_change_pct: { type: String, require: false },
+  },
 });
 
 module.exports = mongoose.model("StockData", stockSchema);
