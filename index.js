@@ -21,19 +21,6 @@ mongoose.connect(
 const app = express();
 
 const typeDefs = gql`
-  type User {
-    name: String!
-    age: String!
-    married: String!
-  }
-
-  type Post {
-    userId: Int!
-    id: Int!
-    title: String!
-    body: String!
-  }
-
   type ytd {
     volume: String!
     price_change: String!
@@ -72,25 +59,23 @@ const typeDefs = gql`
 
   # Query
   type Query {
-    getAllUsers: [User!]!
-    getAllPosts: [Post!]!
     getAllStockData: [StockData!]!
+  }
+
+  type Mutation {
+    createStockData(id: String!): StockData!
   }
 `;
 
 const resolvers = {
   Query: {
-    getAllUsers() {
-      return users;
-    },
     async getAllStockData() {
       const data = ["BTC", "ETH"];
       const res = await axios.get(
         `https://api.nomics.com/v1/currencies/ticker?key=7e69217413100117711004501a2a5e57&currency=BTC,ETH&ids=${data}`
       );
-      //  console.log(res.data);
+
       res.data.filter((i) => {
-        //console.log(i);
         if (i.id === "BTC") {
           const stockData = new StockData({
             _id: new mongoose.Types.ObjectId(),
@@ -132,6 +117,26 @@ const resolvers = {
       });
 
       return res.data;
+    },
+  },
+
+  Mutation: {
+    // just adding mutation for one key as of now;
+    createStockData(parent, args) {
+      const newStockData = args;
+      const _newStockData = new StockData({
+        _id: new mongoose.Types.ObjectId(),
+        id: newStockData.id,
+      });
+
+      _newStockData.save(function (err, doc) {
+        if (err) {
+          return console.error(err);
+        } else {
+          console.log("Stock Data Added succussfully!");
+          return newStockData;
+        }
+      });
     },
   },
 };
