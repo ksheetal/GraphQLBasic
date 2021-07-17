@@ -11,13 +11,10 @@ require("dotenv").config();
 const MONGO_HOST = process.env.MONGO_HOST;
 const MONGO_PORT = process.env.MONGO_PORT;
 
-mongoose.connect(
-  "mongodb://" + MONGO_HOST + ":" + MONGO_PORT + "/graphQLData",
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-);
+mongoose.connect("mongodb://mongo:27017/graphQLData", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 const app = express();
 
 const typeDefs = gql`
